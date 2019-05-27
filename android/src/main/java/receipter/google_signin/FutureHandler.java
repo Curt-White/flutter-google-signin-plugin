@@ -43,18 +43,22 @@ public class FutureHandler {
         return this.currentOp;
     }
 
-    public finishOperationWithSuccess(Object data) {
+    public void clearOperation()  {
+        this.currentOp = null;
+    }
+
+    public void finishOperationWithSuccess(Object data) {
         this.currentOp.result.success(data);
         this.currentOp = null;
     }
 
-    public finishOperationWithError(String code, String message) {
+    public void finishOperationWithError(String code, String message) {
         this.currentOp.result.error(code, message, null);
         this.currentOp = null;
     }
 
     public interface Callback<T> {
-        void task(Future<T> future);
+        void run(Future<T> future);
     }
 
     public FutureHandler(int threads) {
@@ -62,14 +66,14 @@ public class FutureHandler {
                     new LinkedBlockingQueue<Runnable>());
     }
 
-    public <T> void HandleAsync(final Callable<T> func, final Callback<T> callback) {
-        final ListenableFuture<T> future = RunAsync(func);
+    public <T> void handleAsync(final Callable<T> func, final Callback<T> callback) {
+        final ListenableFuture<T> future = runAsync(func);
 
         future.addListener(
             new Runnable(){
                 @Override
                 public void run() {
-                    callback.task(future);
+                    callback.run(future);
                 }
             },
             new Executor(){
@@ -82,7 +86,7 @@ public class FutureHandler {
         );
     }
 
-    public <T> ListenableFuture<T> RunAsync(final Callable<T> func) {
+    public <T> ListenableFuture<T> runAsync(final Callable<T> func) {
         final SettableFuture<T> future = SettableFuture.create();
 
         exec.execute(new Runnable() {

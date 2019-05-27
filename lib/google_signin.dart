@@ -14,8 +14,8 @@ class GoogleSignin {
   static configure() async {
     var mp = { 
       'scopes': ['https://www.googleapis.com/auth/userinfo.email'],
-      'iosClientId': '1069760089509-uf228dkrqancv7kqe7oi28qeunqltkad.apps.googleusercontent.com',
-      'webClientId': '1069760089509-36242fb9lgju2m6hkdf3mrn6msqur08s.apps.googleusercontent.com',
+      // 'iosClientId': '1069760089509-uf228dkrqancv7kqe7oi28qeunqltkad.apps.googleusercontent.com',
+      'webClientId': '794129039107-5ril9hvcmdmns05jiam68lhq4h7atinn.apps.googleusercontent.com',
       'offlineAccess': true,
       'forceConsentPrompt': false 
     };
@@ -26,6 +26,7 @@ class GoogleSignin {
   }
 
   static signIn() async {
-    await _channel.invokeMethod('signIn');
+   var val = await _channel.invokeMethod('signIn');
+   print(val);
   }
 }

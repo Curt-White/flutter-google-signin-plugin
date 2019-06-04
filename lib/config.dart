@@ -1,3 +1,4 @@
+/// Holds the configurations for the sign in process
 class Config {
   List<String> scopes;
   String iosClientId;
@@ -31,3 +32,4 @@ class Config {
     };
   }
 }
+

@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!--Add ios reversed client id below-->
+				<!-- Reversed Client ID here -->
 				<string></string>
 			</array>
 		</dict>

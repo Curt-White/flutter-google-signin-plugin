@@ -107,6 +107,9 @@ public class GoogleSigninPlugin implements MethodCallHandler {
       case("signOut"):
         signOut(result);
         break;
+      case("isSignedIn"):
+        isSignedIn(result);
+        break;
       case("disconnect"):
         disconnect(result);
         break;

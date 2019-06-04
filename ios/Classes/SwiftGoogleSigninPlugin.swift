@@ -22,6 +22,25 @@ public class SwiftGoogleSigninPlugin: NSObject, FlutterPlugin, GIDSignInDelegate
 
     signal(SIGPIPE, SIG_IGN);
   }
+  
+  // Return proper
+  public func getFlutterError(error: Error) -> FlutterError {
+    let code: Int = (error as NSError).code;
+    let message: String = (error as NSError).domain;
+    let description: String = (error as NSError).localizedDescription;
+
+    var errorCode: String;
+
+    if (code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue) {
+      errorCode = "not_signed_in";
+    } else if (code == GIDSignInErrorCode.canceled.rawValue) {
+      errorCode = "sign_in_cancelled";
+    } else {
+      errorCode = "sign_in_failed";
+    }
+    
+    return FlutterError(code: errorCode, message: message, details: description);
+  }
 
   // Flutter handle the function calls
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -35,22 +54,18 @@ public class SwiftGoogleSigninPlugin: NSObject, FlutterPlugin, GIDSignInDelegate
       configure(args: args, result: result);
       result(nil);
     case "signIn":
-      print("Sign In");
       if !setAccountRequest(result: result) {
         return;
       }
       GIDSignIn.sharedInstance()?.signIn();
     case "isSignedIn":
-      print("isSignedIn");
       result(GIDSignIn.sharedInstance()?.hasAuthInKeychain());
     case "signInSilently":
-      print("signInSilently");
       if !setAccountRequest(result: result) {
         return;
       }
       GIDSignIn.sharedInstance()?.signInSilently();
     case "getTokens":
-      print("getTokens");
       let user: GIDGoogleUser? = GIDSignIn.sharedInstance()?.currentUser;
       let auth: GIDAuthentication = user!.authentication;
       auth.getTokensWithHandler { (auth, error) in
@@ -60,20 +75,16 @@ public class SwiftGoogleSigninPlugin: NSObject, FlutterPlugin, GIDSignInDelegate
         ]);
       }
     case "signOut":
-      print("signOut");
       GIDSignIn.sharedInstance()?.signOut();
       result(nil);
     case "disconnect":
-      print("disconnect");
       if !setAccountRequest(result: result) {
         return;
       }
       GIDSignIn.sharedInstance()?.disconnect();
     case "clearTokenCache":
-      print("Clear Auth Cache");
       result(nil);
     default:
-      print("NotImplemented");
       result("Not Implemented");
     }
   }
@@ -162,11 +173,11 @@ public class SwiftGoogleSigninPlugin: NSObject, FlutterPlugin, GIDSignInDelegate
   public func responseWithSigninResult(account: [String : Any]?, error: Error? = nil) {
     print(self._accountRequest == nil);
     guard let result: FlutterResult = self._accountRequest else {
-      print("failing");
+      print("Error on account request, not null");
       return;
     }
-    print("passed fail");
+
     self._accountRequest = nil;
-    result(error != nil ? error : account);
+    result(error != nil ? getFlutterError(error: error!) : account);
   }
 }
